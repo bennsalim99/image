@@ -99,9 +99,17 @@
                     body: formData
                 });
 
+                // Önce yanıtın JSON olup olmadığını kontrol et
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Sunucudan geçersiz yanıt alındı');
+                }
+
                 const data = await response.json();
 
-                if (!response.ok) throw new Error(data.error);
+                if (!response.ok) {
+                    throw new Error(data.error || 'Bir hata oluştu');
+                }
 
                 // Görüntüyü göster
                 resultImage.src = `/static/results/${data.filename}`;
@@ -109,7 +117,7 @@
                 downloadButton.href = `/download/${data.filename}`;
                 resultContainer.classList.remove('d-none');
             } catch (error) {
-                alert(error.message);
+                alert(`Hata: ${error.message}`);
                 uploadZone.classList.remove('d-none');
             } finally {
                 processingSpinner.classList.add('d-none');

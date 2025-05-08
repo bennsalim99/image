@@ -25,37 +25,38 @@ def process_image():
     if file.filename == '':
         return jsonify({'error': 'Dosya seçilmedi'}), 400
 
-    # Benzersiz dosya adı oluştur
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_filename = f"output_{timestamp}.png"
     
-    # Dosya yollarını oluştur
     input_path = os.path.join(UPLOAD_FOLDER, f"input_{timestamp}.png")
     output_path = os.path.join(RESULT_FOLDER, output_filename)
 
     try:
-        # Dosyayı kaydet ve işle
         file.save(input_path)
         input_image = Image.open(input_path)
         output_image = remove(input_image)
         output_image.save(output_path)
 
-        # Giriş dosyasını sil (opsiyonel)
-        os.remove(input_path)
+        os.remove(input_path)  # Geçici dosyayı sil
 
+        # JSON yanıtı döndür
         return jsonify({
             'success': True,
-            'filename': output_filename
+            'filename': output_filename,
+            'message': 'Görsel başarıyla işlendi'
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    file_path = os.path.join('static', 'results', filename)
-    if not os.path.exists(file_path):
-        return 'Dosya bulunamadı', 404
-    return send_file(file_path, as_attachment=True)
+    try:
+        file_path = os.path.join('static', 'results', filename)
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'Dosya bulunamadı'}), 404
+        return send_file(file_path, as_attachment=True)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
