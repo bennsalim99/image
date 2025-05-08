@@ -1,0 +1,14 @@
+{
+    "hfr56cd": {
+        "type": "basic",
+        "remaining_uses": 100,
+        "total_uses": 100,
+        "ip_usage": {}
+    },
+    "pro789xy": {
+        "type": "pro",
+        "remaining_uses": 250,
+        "total_uses": 250,
+        "ip_usage": {}
+    }
+}
